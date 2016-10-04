@@ -8,8 +8,8 @@ import (
 
 	proto2 "github.com/micro/discovery-srv/proto/discovery"
 	"github.com/micro/go-micro"
-	disco "github.com/micro/go-platform/discovery"
-	proto "github.com/micro/go-platform/discovery/proto"
+	disco "github.com/micro/go-os/discovery"
+	proto "github.com/micro/go-os/discovery/proto"
 	"golang.org/x/net/context"
 )
 

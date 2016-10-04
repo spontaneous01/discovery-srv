@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/micro/go-micro/registry"
-	proto "github.com/micro/go-platform/discovery/proto"
+	proto "github.com/micro/go-os/discovery/proto"
 )
 
 func values(v []*registry.Value) []*proto.Value {

@@ -115,5 +115,5 @@ micro query go.micro.srv.discovery Discovery.Endpoints
 
 ### Sending Heartbeats
 
-Heartbeats are sent to the discovery service using [go-platform/discovery](https://github.com/micro/go-platform/tree/master/discovery)
+Heartbeats are sent to the discovery service using [go-os/discovery](https://github.com/micro/go-os/tree/master/discovery)
 

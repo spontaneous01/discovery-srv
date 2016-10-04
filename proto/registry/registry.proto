@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go.micro.srv.discovery.registry;
 
-import "github.com/micro/go-platform/discovery/proto/discovery.proto";
+import "github.com/micro/go-os/discovery/proto/discovery.proto";
 
 service Registry {
 	rpc Register(RegisterRequest) returns (RegisterResponse) {}
@@ -13,14 +13,14 @@ service Registry {
 }
 
 message RegisterRequest {
-	Service service = 1;
+	go.micro.os.discovery.Service service = 1;
 }
 
 message RegisterResponse {
 }
 
 message DeregisterRequest {
-	Service service = 1;
+	go.micro.os.discovery.Service service = 1;
 }
 
 message DeregisterResponse {
@@ -31,14 +31,14 @@ message GetServiceRequest {
 }
 
 message GetServiceResponse {
-	repeated Service services = 1;
+	repeated go.micro.os.discovery.Service services = 1;
 }
 
 message ListServicesRequest {
 }
 
 message ListServicesResponse {
-	repeated Service services = 1;
+	repeated go.micro.os.discovery.Service services = 1;
 }
 
 message WatchRequest {
@@ -46,5 +46,5 @@ message WatchRequest {
 }
 
 message WatchResponse {
-	Result result = 1;
+	go.micro.os.discovery.Result result = 1;
 }

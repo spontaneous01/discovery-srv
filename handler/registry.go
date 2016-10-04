@@ -7,7 +7,7 @@ import (
 	"github.com/micro/go-micro/errors"
 
 	proto "github.com/micro/discovery-srv/proto/registry"
-	proto2 "github.com/micro/go-platform/discovery/proto"
+	proto2 "github.com/micro/go-os/discovery/proto"
 	"golang.org/x/net/context"
 )
 

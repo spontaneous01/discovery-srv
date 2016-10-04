@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go.micro.srv.discovery.discovery;
 
-import "github.com/micro/go-platform/discovery/proto/discovery.proto";
+import "github.com/micro/go-os/discovery/proto/discovery.proto";
 
 service Discovery {
 	rpc Endpoints(EndpointsRequest) returns (EndpointsResponse) {}
@@ -13,7 +13,7 @@ service Discovery {
 message ServiceEndpoint {
 	string service = 1;
 	string version = 2;
-	Endpoint endpoint = 3;
+	go.micro.os.discovery.Endpoint endpoint = 3;
 }
 
 message EndpointsRequest {
@@ -35,7 +35,7 @@ message HeartbeatsRequest {
 }
 
 message HeartbeatsResponse {
-	repeated Heartbeat heartbeats = 1;
+	repeated go.micro.os.discovery.Heartbeat heartbeats = 1;
 }
 
 message WatchResultsRequest {
@@ -46,5 +46,5 @@ message WatchResultsRequest {
 }
 
 message WatchResultsResponse {
-	repeated Result results = 1;
+	repeated go.micro.os.discovery.Result results = 1;
 }
