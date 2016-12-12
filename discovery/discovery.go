@@ -398,3 +398,15 @@ func Init(s micro.Service) {
 func Run() {
 	DefaultDiscovery.Run()
 }
+
+func Endpoints(service, version string, limit, offset int) ([]*proto2.ServiceEndpoint, error) {
+	return DefaultDiscovery.Endpoints(service, version, limit, offset)
+}
+
+func Heartbeats(id string, after int64, limit, offset int) ([]*proto.Heartbeat, error) {
+	return DefaultDiscovery.Heartbeats(id, after, limit, offset)
+}
+
+func WatchResults(service string, after int64, limit, offset int) ([]*proto.Result, error) {
+	return DefaultDiscovery.WatchResults(service, after, limit, offset)
+}

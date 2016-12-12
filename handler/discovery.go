@@ -13,7 +13,7 @@ func (m *Discovery) Endpoints(ctx context.Context, req *proto.EndpointsRequest, 
 	if req.Limit == 0 {
 		req.Limit = 10
 	}
-	endpoints, err := discovery.DefaultDiscovery.Endpoints(req.Service, req.Version, int(req.Limit), int(req.Offset))
+	endpoints, err := discovery.Endpoints(req.Service, req.Version, int(req.Limit), int(req.Offset))
 	if err != nil && err == discovery.ErrNotFound {
 		return errors.NotFound("go.micro.srv.discovery.Discovery.Endpoints", err.Error())
 	} else if err != nil {
@@ -28,7 +28,7 @@ func (m *Discovery) Heartbeats(ctx context.Context, req *proto.HeartbeatsRequest
 	if req.Limit == 0 {
 		req.Limit = 10
 	}
-	hbs, err := discovery.DefaultDiscovery.Heartbeats(req.Id, int64(req.After), int(req.Limit), int(req.Offset))
+	hbs, err := discovery.Heartbeats(req.Id, int64(req.After), int(req.Limit), int(req.Offset))
 	if err != nil && err == discovery.ErrNotFound {
 		return errors.NotFound("go.micro.srv.discovery.Discovery.Heartbeats", err.Error())
 	} else if err != nil {
@@ -43,7 +43,7 @@ func (m *Discovery) WatchResults(ctx context.Context, req *proto.WatchResultsReq
 	if req.Limit == 0 {
 		req.Limit = 10
 	}
-	rs, err := discovery.DefaultDiscovery.WatchResults(req.Service, int64(req.After), int(req.Limit), int(req.Offset))
+	rs, err := discovery.WatchResults(req.Service, int64(req.After), int(req.Limit), int(req.Offset))
 	if err != nil && err == discovery.ErrNotFound {
 		return errors.NotFound("go.micro.srv.discovery.Discovery.WatchResults", err.Error())
 	} else if err != nil {
