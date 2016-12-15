@@ -411,14 +411,6 @@ func (d *discovery) Stop() error {
 	return nil
 }
 
-func Start() error {
-	return Default.Start()
-}
-
-func Stop() error {
-	return Default.Stop()
-}
-
 func Endpoints(service, version string, limit, offset int) ([]*proto2.ServiceEndpoint, error) {
 	return Default.Endpoints(service, version, limit, offset)
 }
@@ -430,3 +422,12 @@ func Heartbeats(id string, after int64, limit, offset int) ([]*proto.Heartbeat, 
 func WatchResults(service string, after int64, limit, offset int) ([]*proto.Result, error) {
 	return Default.WatchResults(service, after, limit, offset)
 }
+
+func Start() error {
+	return Default.Start()
+}
+
+func Stop() error {
+	return Default.Stop()
+}
+
