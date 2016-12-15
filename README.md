@@ -1,41 +1,31 @@
-# Discovery Server
+# Discovery Service
 
-Discovery server is a microservice which layers on the registry to provide heartbeating, in memory caching and much more. 
+The discovery service is a micro service which layers on the registry to provide heartbeating, in memory caching and much more. 
 It subscribes to heartbeats and maintains a registry based on liveness.
 
-It's built with the [Eureka 2.0](https://github.com/Netflix/eureka/wiki/Eureka-2.0-Architecture-Overview) design in mind. 
-The Discovery service acts as a read layer cache where the usage of a Registry like Consul, Etcd, Zookeeper act as the 
-write layer. With the combination of the Registry, Discovery and Platform we can develop a highly available discovery 
-system.
+## Usage
 
+### Run Standalone
 
-## Getting started
+Specify a server address and the same for registry address
 
-1. Install Consul
+```shell
+discovery-srv --server_address=127.0.0.1:8001 --registry_address=127.0.0.1:8001
+```
 
-	Consul is the default registry/discovery for go-micro apps. It's however pluggable.
-	[https://www.consul.io/intro/getting-started/install.html](https://www.consul.io/intro/getting-started/install.html)
+### Cluster instances
 
-2. Run Consul
-	```
-	$ consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul
-	```
+Specify addresses of other registries
 
-3. Download and start the service
+```shell
+discovery-srv --server_address=127.0.0.1:8001 --registry_address=127.0.0.1:8001,10.0.0.1:8001,10.0.0.2:8001
+```
 
-	```shell
-	go get github.com/micro/discovery-srv
-	discovery-srv
-	```
-
-	OR as a docker container
-
-	```shell
-	docker run microhq/discovery-srv --registry_address=YOUR_REGISTRY_ADDRESS
-	```
+Use via [go-os/discovery](https://github.com/micro/go-os/tree/master/discovery) client
 
 ## The API
-Discovery server implements the following RPC Methods
+
+The discovery service implements the Registry as RPC methods as well as the following
 
 ### Discovery.Heartbeats
 ```shell

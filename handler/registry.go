@@ -18,7 +18,7 @@ func (r *Registry) Register(ctx context.Context, req *proto.RegisterRequest, rsp
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.Register", "bad request")
 	}
 
-	if err := discovery.DefaultDiscovery.Register(toService(req.Service)); err != nil {
+	if err := discovery.Default.Register(toService(req.Service)); err != nil {
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.Register", err.Error())
 	}
 
@@ -30,7 +30,7 @@ func (r *Registry) Deregister(ctx context.Context, req *proto.DeregisterRequest,
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.Deregister", "bad request")
 	}
 
-	if err := discovery.DefaultDiscovery.Deregister(toService(req.Service)); err != nil {
+	if err := discovery.Default.Deregister(toService(req.Service)); err != nil {
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.Deregister", err.Error())
 	}
 
@@ -42,7 +42,7 @@ func (r *Registry) GetService(ctx context.Context, req *proto.GetServiceRequest,
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.GetService", "bad request")
 	}
 
-	services, err := discovery.DefaultDiscovery.GetService(req.Service)
+	services, err := discovery.Default.GetService(req.Service)
 	if err != nil {
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.GetService", err.Error())
 	}
@@ -55,7 +55,7 @@ func (r *Registry) GetService(ctx context.Context, req *proto.GetServiceRequest,
 }
 
 func (r *Registry) ListServices(ctx context.Context, req *proto.ListServicesRequest, rsp *proto.ListServicesResponse) error {
-	services, err := discovery.DefaultDiscovery.ListServices()
+	services, err := discovery.Default.ListServices()
 	if err != nil {
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.GetService", err.Error())
 	}
@@ -67,7 +67,7 @@ func (r *Registry) ListServices(ctx context.Context, req *proto.ListServicesRequ
 }
 
 func (r *Registry) Watch(ctx context.Context, req *proto.WatchRequest, stream proto.Registry_WatchStream) error {
-	watcher, err := discovery.DefaultDiscovery.Watch()
+	watcher, err := discovery.Default.Watch()
 	if err != nil {
 		return errors.InternalServerError("go.micro.srv.discovery.Registry.Watch", err.Error())
 	}

@@ -2,19 +2,19 @@ package discovery
 
 import (
 	"errors"
-	"log"
 	"sync"
 	"time"
 
 	proto2 "github.com/micro/discovery-srv/proto/discovery"
-	"github.com/micro/go-micro"
-	disco "github.com/micro/go-os/discovery"
+	"github.com/micro/go-micro/registry"
 	proto "github.com/micro/go-os/discovery/proto"
+	"github.com/micro/go-plugins/registry/memory"
 	"golang.org/x/net/context"
 )
 
 type discovery struct {
-	disco.Discovery
+	registry.Registry
+	exit chan bool
 
 	wtx          sync.RWMutex
 	watchResults map[string][]*proto.Result
@@ -27,21 +27,24 @@ type discovery struct {
 }
 
 var (
-	DefaultDiscovery = newDiscovery()
-	ErrNotFound      = errors.New("not found")
-	HeartbeatTopic   = "micro.discovery.heartbeat"
-	WatchTopic       = "micro.discovery.watch"
+	Default        = newDiscovery()
+	ErrNotFound    = errors.New("not found")
+	HeartbeatTopic = "micro.discovery.heartbeat"
+	WatchTopic     = "micro.discovery.watch"
 
 	TickInterval = time.Duration(time.Minute)
 	History      = int64(3600)
 )
 
 func newDiscovery() *discovery {
-	return &discovery{
+	d := &discovery{
+		exit:         make(chan bool),
 		watchResults: make(map[string][]*proto.Result),
 		heartbeats:   make(map[string][]*proto.Heartbeat),
 		endpoints:    make(map[string][]*proto2.ServiceEndpoint),
 	}
+	d.Registry = memory.NewRegistry()
+	return d
 }
 
 func filterRes(r []*proto.Result, after int64, limit, offset int) []*proto.Result {
@@ -166,6 +169,7 @@ func (d *discovery) reapHB() {
 		var beats []*proto.Heartbeat
 		for _, beat := range hb {
 			if t > (beat.Timestamp+beat.Interval) && t > (beat.Timestamp+beat.Ttl) {
+				d.Deregister(toService(beat.Service))
 				continue
 			}
 			beats = append(beats, beat)
@@ -193,20 +197,18 @@ func (d *discovery) reapRes() {
 
 func (d *discovery) run() {
 	t := time.NewTicker(TickInterval)
+	defer t.Stop()
 
-	for _ = range t.C {
-		d.reapHB()
-		d.reapRes()
-		d.reapEps()
+	for {
+		select {
+		case <-t.C:
+			d.reapHB()
+			d.reapRes()
+			d.reapEps()
+		case <-d.exit:
+			return
+		}
 	}
-}
-
-func (d *discovery) Init(s micro.Service) {
-	d.Discovery = disco.NewDiscovery(
-		disco.Service(false),
-		disco.Registry(s.Options().Registry),
-		disco.Client(s.Client()),
-	)
 }
 
 func (d *discovery) Endpoints(service, version string, limit, offset int) ([]*proto2.ServiceEndpoint, error) {
@@ -302,6 +304,7 @@ func (d *discovery) ProcessHeartbeat(ctx context.Context, hb *proto.Heartbeat) e
 
 	hbs, ok := d.heartbeats[hb.Id]
 	if !ok {
+		d.Register(toService(hb.Service))
 		d.heartbeats[hb.Id] = append(d.heartbeats[hb.Id], hb)
 		return nil
 	}
@@ -317,6 +320,7 @@ func (d *discovery) ProcessHeartbeat(ctx context.Context, hb *proto.Heartbeat) e
 		}
 	}
 	if !seen {
+		d.Register(toService(hb.Service))
 		heartbeats = append(heartbeats, hb)
 	}
 	d.heartbeats[hb.Id] = heartbeats
@@ -336,6 +340,7 @@ func (d *discovery) ProcessResult(ctx context.Context, r *proto.Result) error {
 	service, ok := d.endpoints[r.Service.Name]
 	if !ok {
 		if r.Action == "delete" {
+			d.Deregister(toService(r.Service))
 			return nil
 		}
 
@@ -353,8 +358,8 @@ func (d *discovery) ProcessResult(ctx context.Context, r *proto.Result) error {
 		return nil
 	}
 
-	// TODO: handle deletes
 	if r.Action == "delete" {
+		d.Deregister(toService(r.Service))
 		return nil
 	}
 
@@ -381,32 +386,47 @@ func (d *discovery) ProcessResult(ctx context.Context, r *proto.Result) error {
 	// update the endpoints
 	d.endpoints[r.Service.Name] = endpoints
 
+	// register
+	d.Register(toService(r.Service))
+
 	return nil
 }
 
-func (d *discovery) Run() {
-	if d.Discovery == nil {
-		log.Fatal("Discovery not initialised")
+func (d *discovery) Start() error {
+	if d.Registry == nil {
+		return errors.New("discovery not initialised")
 	}
+
 	go d.run()
+	return nil
 }
 
-func Init(s micro.Service) {
-	DefaultDiscovery.Init(s)
+func (d *discovery) Stop() error {
+	select {
+	case <-d.exit:
+		return nil
+	default:
+		close(d.exit)
+	}
+	return nil
 }
 
-func Run() {
-	DefaultDiscovery.Run()
+func Start() error {
+	return Default.Start()
+}
+
+func Stop() error {
+	return Default.Stop()
 }
 
 func Endpoints(service, version string, limit, offset int) ([]*proto2.ServiceEndpoint, error) {
-	return DefaultDiscovery.Endpoints(service, version, limit, offset)
+	return Default.Endpoints(service, version, limit, offset)
 }
 
 func Heartbeats(id string, after int64, limit, offset int) ([]*proto.Heartbeat, error) {
-	return DefaultDiscovery.Heartbeats(id, after, limit, offset)
+	return Default.Heartbeats(id, after, limit, offset)
 }
 
 func WatchResults(service string, after int64, limit, offset int) ([]*proto.Result, error) {
-	return DefaultDiscovery.WatchResults(service, after, limit, offset)
+	return Default.WatchResults(service, after, limit, offset)
 }
