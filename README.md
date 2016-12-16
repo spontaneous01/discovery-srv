@@ -3,22 +3,30 @@
 The discovery service is a micro service which layers on the [go-micro.Registry](https://godoc.org/github.com/micro/go-micro/registry#Registry) to 
 provide service discovery. It includes heartbeating, in memory caching and maintains a registry based on liveness.
 
+## Features
+
+- Zero dependencies
+- In-memory registry
+- Clustering
+- Heartbeating
+- RPC interface
+
 ## Usage
 
 ### Run Standalone
 
-Specify a server address and the same for registry address
+Discovery can be run as a single instance. It just needs a server address and the same as the registry address.
 
 ```shell
-discovery-srv --server_address=127.0.0.1:8001 --registry_address=127.0.0.1:8001
+discovery-srv --server_address=10.0.0.1:8001 --registry_address=10.0.0.1:8001
 ```
 
 ### Cluster instances
 
-Specify addresses of other registries
+Clustering instances of discovery is simply done by specifying the addresses to other instances.
 
 ```shell
-discovery-srv --server_address=127.0.0.1:8001 --registry_address=127.0.0.1:8001,10.0.0.1:8001,10.0.0.2:8001
+discovery-srv --server_address=10.0.0.1:8001 --registry_address=10.0.0.1:8001,10.0.0.2:8001,10.0.0.3:8001
 ```
 
 Use via [go-os/discovery](https://github.com/micro/go-os/tree/master/discovery) client
