@@ -21,9 +21,9 @@ Discovery can be run as a single instance. It just needs a server address and th
 discovery-srv --server_address=10.0.0.1:8001 --registry_address=10.0.0.1:8001
 ```
 
-### Cluster instances
+### Cluster Instances
 
-Clustering instances of discovery is simply done by specifying the addresses to other instances.
+Clustering instances of discovery is simply done by specifying the addresses of other instances.
 
 ```shell
 discovery-srv --server_address=10.0.0.1:8001 --registry_address=10.0.0.1:8001,10.0.0.2:8001,10.0.0.3:8001
