@@ -1,7 +1,7 @@
 # Discovery Service
 
-The discovery service is a micro service which layers on the registry to provide heartbeating, in memory caching and much more. 
-It subscribes to heartbeats and maintains a registry based on liveness.
+The discovery service is a micro service which layers on the [go-micro.Registry](https://godoc.org/github.com/micro/go-micro/registry#Registry) to 
+provide service discovery. It includes heartbeating, in memory caching and maintains a registry based on liveness.
 
 ## Usage
 
@@ -25,7 +25,7 @@ Use via [go-os/discovery](https://github.com/micro/go-os/tree/master/discovery) 
 
 ## The API
 
-The discovery service implements the Registry as RPC methods as well as the following
+The discovery service implements the [go-micro.Registry](https://godoc.org/github.com/micro/go-micro/registry#Registry) as RPC methods as well as the following
 
 ### Discovery.Heartbeats
 ```shell
