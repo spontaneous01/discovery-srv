@@ -26,22 +26,13 @@ func main() {
 
 	service.Init()
 
-	service.Server().Subscribe(
-		service.Server().NewSubscriber(
-			discovery.HeartbeatTopic,
-			discovery.Default.ProcessHeartbeat,
-		),
-	)
-
-	service.Server().Subscribe(
-		service.Server().NewSubscriber(
-			discovery.WatchTopic,
-			discovery.Default.ProcessResult,
-		),
-	)
-
+	// Handlers
 	proto.RegisterDiscoveryHandler(service.Server(), new(handler.Discovery))
 	proto2.RegisterRegistryHandler(service.Server(), new(handler.Registry))
+
+	// Subscribers
+	proto.RegisterSubscriber(discovery.HeartbeatTopic, service.Server(), discovery.Default.ProcessHeartbeat)
+	proto.RegisterSubscriber(discovery.WatchTopic, service.Server(), discovery.Default.ProcessResult)
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
